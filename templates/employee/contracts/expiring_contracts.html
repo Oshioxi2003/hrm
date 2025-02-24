@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card shadow">
+        <!-- Card Header -->
+        <div class="card-header bg-warning py-3 d-flex justify-content-between align-items-center">
+            <h4 class="font-weight-bold text-dark mb-0">
+                <i class="mdi mdi-clock-alert"></i> Expiring Contracts
+            </h4>
+            <a href="{% url 'employee:contract_list' %}" class="btn btn-light btn-sm">
+                <i class="mdi mdi-arrow-left"></i> Back to All Contracts
+            </a>
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body">
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Total Expiring Contracts</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_expiring }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="mdi mdi-file-alert text-warning" style="font-size: 2rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-danger shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                        Expiring This Month</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ expire_this_month }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="mdi mdi-calendar-alert text-danger" style="font-size: 2rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Expiring Next Month</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ expire_next_month }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="mdi mdi-calendar-clock text-info" style="font-size: 2rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contracts Table -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Contract ID</th>
+                            <th>Employee</th>
+                            <th>Contract Type</th>
+                            <th>End Date</th>
+                            <th>Days Remaining</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contract in contracts %}
+                        <tr class="{% if contract.days_until_expiry <= 30 %}table-danger{% else %}table-warning{% endif %}">
+                            <td>{{ contract.contract_id }}</td>
+                            <td>{{ contract.employee.full_name }}</td>
+                            <td>
+                                <span class="badge badge-pill badge-info">
+                                    {{ contract.contract_type }}
+                                </span>
+                            </td>
+                            <td>{{ contract.end_date|date:"d/m/Y" }}</td>
+                            <td>
+                                <span class="font-weight-bold {% if contract.days_until_expiry <= 30 %}text-danger{% else %}text-warning{% endif %}">
+                                    {{ contract.days_until_expiry }} days
+                                </span>
+                            </td>
+                            <td>
+                                {% if contract.days_until_expiry <= 30 %}
+                                    <span class="badge badge-danger">Urgent</span>
+                                {% else %}
+                                    <span class="badge badge-warning">Warning</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'employee:contract_detail' contract.contract_id %}" 
+                                       class="btn btn-info btn-sm" 
+                                       data-toggle="tooltip" 
+                                       title="View Details">
+                                        <i class="mdi mdi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'employee:contract_update' contract.contract_id %}" 
+                                       class="btn btn-warning btn-sm"
+                                       data-toggle="tooltip" 
+                                       title="Renew Contract">
+                                        <i class="mdi mdi-refresh"></i>
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-success btn-sm"
+                                            data-toggle="tooltip"
+                                            title="Send Reminder"
+                                            onclick="sendReminder('{{ contract.contract_id }}')">
+                                        <i class="mdi mdi-email"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No expiring contracts found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if contracts.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if contracts.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ contracts.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in contracts.paginator.page_range %}
+                    <li class="page-item {% if contracts.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if contracts.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ contracts.next_page_number }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+function sendReminder(contractId) {
+    // Add your reminder sending logic here
+    alert('Reminder sent for contract ' + contractId);
+}
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,16 @@
+asgiref==3.8.1
+crispy-bootstrap5==2024.10
+Django==5.1.6
+django-crispy-forms==2.3
+django-sslserver==0.22
+django-widget-tweaks==1.5.0
+djangorestframework==3.15.2
+ipaddress==1.0.23
+mcast-tester==0.2.dev3
+mysqlclient==2.2.7
+pillow==11.1.0
+psycopg2==2.9.10
+sqlparse==0.5.3
+timedelta==2020.12.3
+tzdata==2025.1
+XlsxWriter==3.2.2

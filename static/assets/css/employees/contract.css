@@ -1,0 +1,26 @@
+.table-hover tbody tr {
+    transition: all 0.3s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(33, 150, 243, 0.1) !important; 
+    box-shadow: 0 0 15px rgba(33, 150, 243, 0.3); 
+    transform: scale(1.01); 
+}
+
+.table-hover tbody tr:hover td {
+    color: #2196F3;
+}
+
+@keyframes neonGlow {
+    from {
+        box-shadow: 0 0 10px rgba(33, 150, 243, 0.2);
+    }
+    to {
+        box-shadow: 0 0 20px rgba(33, 150, 243, 0.4);
+    }
+}
+
+.table-hover tbody tr:hover {
+    animation: neonGlow 1s ease-in-out infinite alternate;
+}

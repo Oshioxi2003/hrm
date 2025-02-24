@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-12 grid-margin stretch-card">
+    <div class="card shadow">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h4 class="font-weight-bold text-primary mb-0">
+                <i class="mdi mdi-account-plus"></i> Add New Employee
+            </h4>
+            <a href="{% url 'employee:employee_list' %}" class="btn btn-outline-primary btn-sm">
+                <i class="mdi mdi-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <div class="card-body">
+            <form method="post" class="forms-sample needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Personal Information Section -->
+                <div class="section-title mb-4">
+                    <h5 class="text-muted"><i class="mdi mdi-account-card-details"></i> Personal Information</h5>
+                    <hr>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="{{ form.full_name.name }}" 
+                                   class="form-control {% if form.full_name.errors %}is-invalid{% endif %}"
+                                   value="{{ form.full_name.value|default:'' }}"
+                                   placeholder="Enter full name">
+                            {% if form.full_name.errors %}
+                                <div class="invalid-feedback">
+                                    <i class="mdi mdi-alert"></i> {{ form.full_name.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Date of Birth <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                </div>
+                                <input type="date" name="{{ form.date_of_birth.name }}" 
+                                       class="form-control {% if form.date_of_birth.errors %}is-invalid{% endif %}"
+                                       value="{% if form.date_of_birth.value %}{{ form.date_of_birth.value|date:'Y-m-d' }}{% endif %}">
+                            </div>
+                            {% if form.date_of_birth.errors %}
+                                <div class="invalid-feedback">
+                                    <i class="mdi mdi-alert"></i> {{ form.date_of_birth.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Gender <span class="text-danger">*</span></label>
+                            <select name="{{ form.gender.name }}" 
+                                    class="form-control custom-select {% if form.gender.errors %}is-invalid{% endif %}">
+                                {% for value, label in form.fields.gender.choices %}
+                                    <option value="{{ value }}" {% if form.gender.value == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.gender.errors %}
+                                <div class="invalid-feedback">
+                                    <i class="mdi mdi-alert"></i> {{ form.gender.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Identity Card <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="mdi mdi-card-account-details"></i></span>
+                                </div>
+                                <input type="text" name="{{ form.identity_card.name }}" 
+                                       class="form-control {% if form.identity_card.errors %}is-invalid{% endif %}"
+                                       value="{{ form.identity_card.value|default:'' }}"
+                                       placeholder="Enter ID card number">
+                            </div>
+                            {% if form.identity_card.errors %}
+                                <div class="invalid-feedback">
+                                    <i class="mdi mdi-alert"></i> {{ form.identity_card.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Department <span class="text-danger">*</span></label>
+                            <select name="{{ form.department.name }}" 
+                                    class="form-control custom-select {% if form.department.errors %}is-invalid{% endif %}">
+                                <option value="">Select Department</option>
+                                {% for value, label in form.fields.department.choices %}
+                                    <option value="{{ value }}" {% if form.department.value == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.department.errors %}
+                                <div class="invalid-feedback">
+                                    <i class="mdi mdi-alert"></i> {{ form.department.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Hire Date <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="mdi mdi-calendar-check"></i></span>
+                                </div>
+                                <input type="date" name="{{ form.hire_date.name }}" 
+                                       class="form-control {% if form.hire_date.errors %}is-invalid{% endif %}"
+                                       value="{% if form.hire_date.value %}{{ form.hire_date.value|date:'Y-m-d' }}{% endif %}">
+                            </div>
+                            {% if form.hire_date.errors %}
+                                <div class="invalid-feedback">
+                                    <i class="mdi mdi-alert"></i> {{ form.hire_date.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="section-title mt-4 mb-4">
+                    <h5 class="text-muted"><i class="mdi mdi-contacts"></i> Contact Information</h5>
+                    <hr>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Email</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="mdi mdi-email"></i></span>
+                                </div>
+                                <input type="email" name="{{ form.email.name }}" 
+                                       class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                                       value="{{ form.email.value|default:'' }}"
+                                       placeholder="Enter email address">
+                            </div>
+                            {% if form.email.errors %}
+                                <div class="invalid-feedback">
+                                    <i class="mdi mdi-alert"></i> {{ form.email.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Phone Number</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="mdi mdi-phone"></i></span>
+                                </div>
+                                <input type="text" name="{{ form.phone_number.name }}" 
+                                       class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}"
+                                       value="{{ form.phone_number.value|default:'' }}"
+                                       placeholder="Enter phone number">
+                            </div>
+                            {% if form.phone_number.errors %}
+                                <div class="invalid-feedback">
+                                    <i class="mdi mdi-alert"></i> {{ form.phone_number.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="font-weight-bold">Address</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="mdi mdi-map-marker"></i></span>
+                        </div>
+                        <textarea name="{{ form.address.name }}" 
+                                  class="form-control {% if form.address.errors %}is-invalid{% endif %}"
+                                  rows="3" 
+                                  placeholder="Enter full address">{{ form.address.value|default:'' }}</textarea>
+                    </div>
+                    {% if form.address.errors %}
+                        <div class="invalid-feedback">
+                            <i class="mdi mdi-alert"></i> {{ form.address.errors|join:", " }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="mdi mdi-alert-circle"></i> {{ form.non_field_errors|join:", " }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endif %}
+
+                <div class="mt-4 text-right">
+                    <a href="{% url 'employee:employee_list' %}" class="btn btn-light mr-2">
+                        <i class="mdi mdi-close"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="mdi mdi-content-save"></i> Save Employee
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Form validation
+    $('.needs-validation').submit(function(event) {
+        if (this.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        $(this).addClass('was-validated');
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

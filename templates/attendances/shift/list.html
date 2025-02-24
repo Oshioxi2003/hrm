@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block attendance_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Work Shifts</h2>
+    <a href="{% url 'attendance:shift_create' %}" class="btn btn-primary">
+        Add New Shift
+    </a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Duration (Hours)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for shift in shifts %}
+        <tr>
+            <td>{{ shift.name }}</td>
+            <td>{{ shift.start_time|time:"H:i" }}</td>
+            <td>{{ shift.end_time|time:"H:i" }}</td>
+            <td>{{ shift.duration_hours|floatformat:2 }}</td>
+            <td>
+                <a href="{% url 'attendance:shift_update' shift.pk %}" 
+                   class="btn btn-sm btn-info">Edit</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">No shifts defined.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-12 grid-margin stretch-card">
+    <div class="card shadow">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h4 class="font-weight-bold text-primary mb-0">
+                <i class="mdi mdi-domain"></i> Add New Department
+            </h4>
+            <a href="{% url 'employee:department_list' %}" class="btn btn-outline-primary btn-sm">
+                <i class="mdi mdi-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <div class="card-body">
+            <form method="post" class="forms-sample needs-validation" novalidate>
+                {% csrf_token %}
+
+                <div class="section-title mb-4">
+                    <h5 class="text-muted">
+                        <i class="mdi mdi-information"></i> Department Information
+                    </h5>
+                    <hr>
+                </div>
+
+                <!-- Department Code & Name -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Department Code <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="mdi mdi-barcode"></i>
+                                    </span>
+                                </div>
+                                <input type="text" name="{{ form.department_code.name }}"
+                                       class="form-control {% if form.department_code.errors %}is-invalid{% endif %}"
+                                       value="{{ form.department_code.value|default:'' }}"
+                                       placeholder="Enter department code"
+                                       required>
+                                {% if form.department_code.errors %}
+                                <div class="invalid-feedback">
+                                    <i class="mdi mdi-alert"></i> {{ form.department_code.errors|join:", " }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <small class="form-text text-muted">
+                                <i class="mdi mdi-information-outline"></i> 
+                                Code must be unique and alphanumeric
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Department Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="mdi mdi-domain"></i>
+                                    </span>
+                                </div>
+                                <input type="text" name="{{ form.department_name.name }}"
+                                       class="form-control {% if form.department_name.errors %}is-invalid{% endif %}"
+                                       value="{{ form.department_name.value|default:'' }}"
+                                       placeholder="Enter department name"
+                                       required>
+                                {% if form.department_name.errors %}
+                                <div class="invalid-feedback">
+                                    <i class="mdi mdi-alert"></i> {{ form.department_name.errors|join:", " }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="font-weight-bold">Description</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="mdi mdi-text-box"></i>
+                            </span>
+                        </div>
+                        <textarea name="{{ form.description.name }}"
+                                  class="form-control {% if form.description.errors %}is-invalid{% endif %}"
+                                  rows="4"
+                                  placeholder="Enter department description">{{ form.description.value|default:'' }}</textarea>
+                        {% if form.description.errors %}
+                        <div class="invalid-feedback">
+                            <i class="mdi mdi-alert"></i> {{ form.description.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <small class="form-text text-muted">
+                        <i class="mdi mdi-information-outline"></i>
+                        Provide a brief description of the department's role and responsibilities
+                    </small>
+                </div>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="mdi mdi-alert-circle"></i> {{ form.non_field_errors|join:", " }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endif %}
+
+                <div class="mt-4 text-right">
+                    <a href="{% url 'employee:department_list' %}" class="btn btn-light mr-2">
+                        <i class="mdi mdi-close"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="mdi mdi-content-save"></i> Save Department
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Form validation
+    $('.needs-validation').submit(function(event) {
+        if (this.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        $(this).addClass('was-validated');
+    });
+
+    // Auto-capitalize department name
+    $('input[name="{{ form.department_name.name }}"]').on('input', function() {
+        $(this).val(function(_, val) {
+            return val.toUpperCase();
+        });
+    });
+
+    // Format department code
+    $('input[name="{{ form.department_code.name }}"]').on('input', function() {
+        $(this).val(function(_, val) {
+            return val.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

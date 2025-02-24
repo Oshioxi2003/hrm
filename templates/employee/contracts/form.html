@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-12 grid-margin stretch-card">
+    <div class="card shadow">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h4 class="font-weight-bold text-primary mb-0">
+                <i class="mdi mdi-file-document-edit"></i>
+                {% if form.instance.pk %}
+                    Update Contract
+                {% else %}
+                    New Contract
+                {% endif %}
+            </h4>
+            <a href="{% url 'employee:contract_list' %}" class="btn btn-outline-primary btn-sm">
+                <i class="mdi mdi-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <!-- Employee and Contract Type -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Employee <span class="text-danger">*</span></label>
+                            <select name="{{ form.employee.name }}" 
+                                    class="form-control {% if form.employee.errors %}is-invalid{% endif %}"
+                                    required>
+                                <option value="">Select Employee</option>
+                                {% for value, label in form.fields.employee.choices %}
+                                    <option value="{{ value }}" 
+                                            {% if form.employee.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.employee.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.employee.errors|join:", " }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Contract Type <span class="text-danger">*</span></label>
+                            <select name="{{ form.contract_type.name }}" 
+                                    class="form-control {% if form.contract_type.errors %}is-invalid{% endif %}"
+                                    required>
+                                <option value="">Select Contract Type</option>
+                                {% for value, label in form.fields.contract_type.choices %}
+                                    <option value="{{ value }}" 
+                                            {% if form.contract_type.value == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.contract_type.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.contract_type.errors|join:", " }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contract Dates -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">Start Date <span class="text-danger">*</span></label>
+                            <input type="date" name="{{ form.start_date.name }}"
+                                   class="form-control {% if form.start_date.errors %}is-invalid{% endif %}"
+                                   value="{% if form.start_date.value %}{{ form.start_date.value|date:'Y-m-d' }}{% endif %}"
+                                   required>
+                            {% if form.start_date.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.start_date.errors|join:", " }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold">End Date</label>
+                            <input type="date" name="{{ form.end_date.name }}"
+                                   class="form-control {% if form.end_date.errors %}is-invalid{% endif %}"
+                                   value="{% if form.end_date.value %}{{ form.end_date.value|date:'Y-m-d' }}{% endif %}">
+                            {% if form.end_date.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.end_date.errors|join:", " }}
+                            </div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Leave blank for permanent contracts
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Salary -->
+                <div class="form-group">
+                    <label class="font-weight-bold">Base Salary <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" name="{{ form.base_salary.name }}"
+                               class="form-control {% if form.base_salary.errors %}is-invalid{% endif %}"
+                               value="{{ form.base_salary.value|default:'' }}"
+                               min="0" step="0.01"
+                               required>
+                        {% if form.base_salary.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.base_salary.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Contract File -->
+                <div class="form-group">
+                    <label class="font-weight-bold">Contract File</label>
+                    <input type="file" name="{{ form.contract_file.name }}"
+                           class="form-control-file {% if form.contract_file.errors %}is-invalid{% endif %}"
+                           accept=".pdf,.doc,.docx">
+                    {% if form.contract_file.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.contract_file.errors|join:", " }}
+                    </div>
+                    {% endif %}
+                    {% if form.instance.contract_file %}
+                    <small class="form-text text-muted">
+                        Current file: {{ form.instance.contract_file.name }}
+                    </small>
+                    {% endif %}
+                </div>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="mdi mdi-alert-circle"></i> {{ form.non_field_errors|join:", " }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endif %}
+
+                <div class="mt-4 text-right">
+                    <a href="{% url 'employee:contract_list' %}" class="btn btn-light mr-2">
+                        <i class="mdi mdi-close"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="mdi mdi-content-save"></i>
+                        {% if form.instance.pk %}
+                            Update Contract
+                        {% else %}
+                            Save Contract
+                        {% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Form validation
+    $('.needs-validation').submit(function(event) {
+        if (this.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        $(this).addClass('was-validated');
+    });
+
+    // Show/hide end date based on contract type
+    $('select[name="{{ form.contract_type.name }}"]').change(function() {
+        if ($(this).val() === 'Probation') {
+            $('input[name="{{ form.end_date.name }}"]').prop('required', true);
+        } else {
+            $('input[name="{{ form.end_date.name }}"]').prop('required', false);
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

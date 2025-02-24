@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <!-- Admin Card -->
+    <div class="col-sm-3 grid-margin">
+        <div class="card bg-gradient-primary">
+            <div class="card-body">
+                <h5 class="text-white">Admin</h5>
+                <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                        <div class="d-flex d-sm-block d-md-flex align-items-center">
+                            <h2 class="mb-0 text-white">{{ admin_count }}</h2>
+                        </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                        <i class="icon-lg mdi mdi-shield-account text-white ml-auto"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HR Card -->
+    <div class="col-sm-3 grid-margin">
+        <div class="card bg-gradient-info">
+            <div class="card-body">
+                <h5 class="text-white">HR</h5>
+                <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                        <div class="d-flex d-sm-block d-md-flex align-items-center">
+                            <h2 class="mb-0 text-white">{{ hr_count }}</h2>
+                        </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                        <i class="icon-lg mdi mdi-account-tie text-white ml-auto"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manager Card -->
+    <div class="col-sm-3 grid-margin">
+        <div class="card bg-gradient-success">
+            <div class="card-body">
+                <h5 class="text-white">Manager</h5>
+                <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                        <div class="d-flex d-sm-block d-md-flex align-items-center">
+                            <h2 class="mb-0 text-white">{{ manager_count }}</h2>
+                        </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                        <i class="icon-lg mdi mdi-account-star text-white ml-auto"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Card -->
+    <div class="col-sm-3 grid-margin">
+        <div class="card bg-gradient-warning">
+            <div class="card-body">
+                <h5 class="text-white">Employee</h5>
+                <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                        <div class="d-flex d-sm-block d-md-flex align-items-center">
+                            <h2 class="mb-0 text-white">{{ employee_count }}</h2>
+                        </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                        <i class="icon-lg mdi mdi-account-group text-white ml-auto"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Users Card -->
+    <div class="col-sm-6 grid-margin">
+        <div class="card bg-gradient-dark">
+            <div class="card-body">
+                <h5 class="text-white">Total Users</h5>
+                <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                        <div class="d-flex d-sm-block d-md-flex align-items-center">
+                            <h2 class="mb-0 text-white">{{ total_users }}</h2>
+                            <p class="text-success ml-2 mb-0 font-weight-medium">Active Users</p>
+                        </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                        <i class="icon-lg mdi mdi-account-multiple-check text-success ml-auto"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Statistics or Charts can be added here -->
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">User Distribution</h4>
+                <canvas id="userDistributionChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('userDistributionChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Admin', 'HR', 'Manager', 'Employee'],
+            datasets: [{
+                data: [
+                    {{ admin_count }},
+                    {{ hr_count }},
+                    {{ manager_count }},
+                    {{ employee_count }}
+                ],
+                backgroundColor: [
+                    'rgba(88, 103, 221, 0.8)',
+                    'rgba(0, 184, 216, 0.8)',
+                    'rgba(23, 198, 113, 0.8)',
+                    'rgba(255, 184, 34, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+                position: 'bottom',
+                labels: {
+                    fontColor: '#fff'
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

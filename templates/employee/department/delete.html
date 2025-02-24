@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-10">
+                    <h4 class="card-title">Delete Department</h4>
+                </div>
+                <div class="col-md-2 text-right">
+                    <a href="{% url 'employee:department_list' %}" class="btn btn-secondary">
+                        <i class="mdi mdi-arrow-left"></i> Back
+                    </a>
+                </div>
+            </div>
+
+            <div class="alert alert-danger">
+                <h5>Are you sure you want to delete this department?</h5>
+                <p><strong>Department Code:</strong> {{ department.department_code }}</p>
+                <p><strong>Department Name:</strong> {{ department.department_name }}</p>
+                <p><strong>Description:</strong> {{ department.description }}</p>
+                
+                {% if department.employees.exists %}
+                <div class="alert alert-warning">
+                    <strong>Warning!</strong> This department has {{ department.employees.count }} active employees.
+                </div>
+                {% endif %}
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger mr-2">Confirm Delete</button>
+                <a href="{% url 'employee:department_list' %}" class="btn btn-light">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

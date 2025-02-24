@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        Quick Attendance
+    </div>
+    <div class="card-body">
+        <form method="post" action="{% url 'attendance:quick_attendance' %}">
+            {% csrf_token %}
+            <input type="hidden" name="employee_id" value="{{ request.user.employee.id }}">
+            
+            <div class="btn-group" role="group">
+                <button type="submit" name="action_type" value="time_in" 
+                        class="btn btn-success">Time In</button>
+                <button type="submit" name="action_type" value="time_out" 
+                        class="btn btn-danger">Time Out</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

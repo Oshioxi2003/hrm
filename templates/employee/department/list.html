@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<head>
+  <link href="{% static 'assets/css/employees/contract.css' %}" rel="stylesheet">
+</head>
+
+
+<div class="col-lg-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-10">
+          <h2 class="card-title">Department List</h2>
+        </div>
+        <div class="col-md-2">
+          <a href="{% url 'employee:department_create' %}" class="btn btn-primary">
+            <i class="mdi mdi-plus"></i> Add New Department
+          </a>
+        </div>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Department Code</th>
+              <th>Department Name</th>
+              <th>Description</th>
+              <th>Total Employees</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for department in departments %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ department.department_code }}</td>
+              <td>{{ department.department_name }}</td>
+              <td>{{ department.description|truncatewords:20 }}</td>
+              <td>{{ department.employees.count }}</td>
+              <td>
+                {% if department.department_id %}
+                <a href="{% url 'employee:department_update' department.department_id %}" 
+                   class="btn btn-primary btn-sm">
+                  <i class="mdi mdi-pencil"></i>
+                </a>
+                <a href="{% url 'employee:department_delete' department.department_id %}" 
+                   class="btn btn-danger btn-sm">
+                  <i class="mdi mdi-delete"></i>
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center">No departments found</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if departments.has_other_pages %}
+      <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if departments.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ departments.previous_page_number }}">
+                <i class="mdi mdi-chevron-left"></i>
+              </a>
+            </li>
+          {% endif %}
+
+          {% for i in departments.paginator.page_range %}
+            {% if departments.number == i %}
+              <li class="page-item active">
+                <span class="page-link">{{ i }}</span>
+              </li>
+            {% else %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if departments.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ departments.next_page_number }}">
+                <i class="mdi mdi-chevron-right"></i>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Add CSS for buttons -->
+<style>
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    margin: 0 2px;
+}
+
+.btn-sm i {
+    font-size: 1rem;
+}
+
+.pagination .page-link {
+    padding: 0.5rem 0.75rem;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+</style>
+{% endblock content %}

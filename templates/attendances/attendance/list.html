@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Attendance Records</h2>
+    
+    <div class="mb-3">
+        <a href="{% url 'attendance:attendance_create' %}" class="btn btn-primary">
+            Add New Record
+        </a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Date</th>
+                <th>Time In</th>
+                <th>Time Out</th>
+                <th>Work Hours</th>
+                <th>Overtime Hours</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendances %}
+            <tr>
+                <td>{{ attendance.employee.full_name }}</td>
+                <td>{{ attendance.date }}</td>
+                <td>{{ attendance.time_in|time:"H:i" }}</td>
+                <td>{{ attendance.time_out|time:"H:i" }}</td>
+                <td>{{ attendance.work_hours|floatformat:2 }}</td>
+                <td>{{ attendance.overtime_hours }}</td>
+                <td>
+                    <a href="{% url 'attendance:attendance_update' attendance.pk %}" 
+                       class="btn btn-sm btn-info">Edit</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No attendance records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+

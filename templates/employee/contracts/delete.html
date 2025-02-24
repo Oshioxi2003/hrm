@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-md-8 mx-auto">
+    <div class="card shadow">
+        <div class="card-header bg-danger py-3">
+            <h4 class="font-weight-bold text-white mb-0">
+                <i class="mdi mdi-alert"></i> Delete Contract Confirmation
+            </h4>
+        </div>
+        
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <i class="mdi mdi-alert-circle"></i>
+                Are you sure you want to delete the following contract?
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tr>
+                        <th width="30%">Contract ID</th>
+                        <td>{{ contract.contract_id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Employee</th>
+                        <td>{{ contract.employee.full_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Contract Type</th>
+                        <td>{{ contract.contract_type }}</td>
+                    </tr>
+                    <tr>
+                        <th>Period</th>
+                        <td>
+                            {{ contract.start_date|date:"d/m/Y" }} - 
+                            {{ contract.end_date|date:"d/m/Y"|default:"Ongoing" }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="text-center">
+                    <a href="{% url 'employee:contract_list' %}" class="btn btn-light mr-2">
+                        <i class="mdi mdi-arrow-left"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="mdi mdi-delete"></i> Confirm Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

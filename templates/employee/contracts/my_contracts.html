@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <!-- Header -->
+            <div class="row mb-4">
+                <div class="col-md-10">
+                    <h4 class="card-title">
+                        <i class="mdi mdi-file-document-outline"></i> 
+                        Hợp đồng của tôi
+                    </h4>
+                </div>
+            </div>
+
+            <!-- Alert Messages -->
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Contracts Table -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Mã hợp đồng</th>
+                            <th>Loại hợp đồng</th>
+                            <th>Ngày bắt đầu</th>
+                            <th>Ngày kết thúc</th>
+                            <th>Lương cơ bản</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contract in contracts %}
+                        <tr>
+                            <td>HĐ-{{ contract.contract_id }}</td>
+                            <td>
+                                {% if contract.contract_type == 'Thử việc' %}
+                                    <span class="badge badge-info">{{ contract.contract_type }}</span>
+                                {% elif contract.contract_type == 'Chính thức' %}
+                                    <span class="badge badge-success">{{ contract.contract_type }}</span>
+                                {% else %}
+                                    <span class="badge badge-warning">{{ contract.contract_type }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ contract.start_date|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if contract.end_date %}
+                                    {{ contract.end_date|date:"d/m/Y" }}
+                                {% else %}
+                                    <span class="text-muted">Không xác định</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ contract.base_salary|floatformat:0 }} VNĐ</td>
+                            <td>
+                                {% if contract.is_active %}
+                                    <span class="badge badge-success">Đang hiệu lực</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Hết hiệu lực</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'employee:contract_detail' contract.pk %}" 
+                                   class="btn btn-info btn-sm" title="Xem chi tiết">
+                                    <i class="mdi mdi-eye"></i>
+                                </a>
+                                {% if contract.contract_file %}
+                                <a href="{{ contract.contract_file.url }}" 
+                                   class="btn btn-primary btn-sm" 
+                                   title="Tải xuống"
+                                   target="_blank">
+                                    <i class="mdi mdi-download"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <div class="p-4">
+                                    <i class="mdi mdi-file-document-outline text-muted" style="font-size: 48px;"></i>
+                                    <p class="mt-2">Chưa có hợp đồng nào</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if contracts.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if contracts.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ contracts.previous_page_number }}">
+                            <i class="mdi mdi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for i in contracts.paginator.page_range %}
+                        {% if contracts.number == i %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ i }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if contracts.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ contracts.next_page_number }}">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Styles -->
+<style>
+.badge {
+    padding: 0.4em 0.8em;
+    font-size: 85%;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    margin: 0 2px;
+}
+
+.btn-sm i {
+    font-size: 1rem;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+    padding: 0.75rem;
+}
+
+.pagination .page-link {
+    padding: 0.5rem 0.75rem;
+}
+
+.card-title i {
+    margin-right: 10px;
+}
+
+/* Hover effect for table rows */
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.075);
+}
+
+/* Custom styling for empty state */
+.text-muted {
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .btn-sm {
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .badge {
+        font-size: 80%;
+    }
+}
+</style>
+
+<!-- Optional JavaScript for auto-hiding alerts -->
+{% block extra_js %}
+<script>
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
+</script>
+{% endblock %}
+{% endblock content %}

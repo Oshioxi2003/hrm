@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+  <link href="{% static 'assets/css/employees/contract.css' %}" rel="stylesheet">
+</head>
+
+<div class="col-lg-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <!-- Header Section -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <h2 class="card-title">Employee List</h2>
+        </div>
+        <div class="col-md-6 text-right">
+          {% if can_create %}
+          <a href="{% url 'employee:employee_create' %}" class="btn btn-primary">
+            <i class="mdi mdi-account-plus"></i> Add New Employee
+          </a>
+          <a href="{% url 'employee:employee_export' %}" class="btn btn-success ml-2">
+            <i class="mdi mdi-file-excel"></i> Export to Excel
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Filter Section -->
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <form method="get" class="form-inline">
+            <div class="form-group mr-3">
+              <select name="department" class="form-control">
+                <option value="">All Departments</option>
+                {% for dept in departments %}
+                <option value="{{ dept.department_id }}" 
+                        {% if selected_department == dept.department_id|stringformat:"s" %}selected{% endif %}>
+                  {{ dept.department_name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group mr-3">
+              <input type="text" name="search" class="form-control" 
+                     placeholder="Search by name..." value="{{ search_query }}">
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="mdi mdi-magnify"></i> Search
+            </button>
+            {% if selected_department or search_query %}
+            <a href="{% url 'employee:employee_list' %}" class="btn btn-secondary ml-2">
+              <i class="mdi mdi-refresh"></i> Reset
+            </a>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+
+      <!-- Table Section -->
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Employee ID</th>
+              <th>Full Name</th>
+              <th>Department</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Hire Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for employee in employees %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ employee.employee_id }}</td>
+              <td>
+                <a href="{% url 'employee:employee_detail' employee.pk %}" 
+                   class="text-primary font-weight-bold">
+                  {{ employee.full_name }}
+                </a>
+              </td>
+              <td>{{ employee.department.department_name|default:"-" }}</td>
+              <td>{{ employee.phone_number|default:"-" }}</td>
+              <td>{{ employee.email|default:"-" }}</td>
+              <td>{{ employee.hire_date|date:"d/m/Y"|default:"-" }}</td>
+              <td>
+                <a href="{% url 'employee:employee_detail' employee.pk %}" 
+                   class="btn btn-info btn-sm" title="View Details">
+                  <i class="mdi mdi-eye"></i>
+                </a>
+                {% if can_edit %}
+                <a href="{% url 'employee:employee_update' employee.pk %}" 
+                   class="btn btn-primary btn-sm" title="Edit">
+                  <i class="mdi mdi-pencil"></i>
+                </a>
+                {% endif %}
+                {% if can_delete %}
+                <a href="{% url 'employee:employee_delete' employee.pk %}" 
+                   class="btn btn-danger btn-sm" title="Delete">
+                  <i class="mdi mdi-delete"></i>
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="8" class="text-center">No employees found</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Section -->
+      {% if employees.has_other_pages %}
+      <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if employees.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ employees.previous_page_number }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+                <i class="mdi mdi-chevron-left"></i>
+              </a>
+            </li>
+          {% endif %}
+
+          {% for i in employees.paginator.page_range %}
+            {% if employees.number == i %}
+              <li class="page-item active">
+                <span class="page-link">{{ i }}</span>
+              </li>
+            {% else %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ i }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">{{ i }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if employees.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ employees.next_page_number }}{% if selected_department %}&department={{ selected_department }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+                <i class="mdi mdi-chevron-right"></i>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .form-inline {
+        flex-wrap: nowrap;
+    }
+    
+    .form-inline .form-control {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+</style>
+{% endblock content %}

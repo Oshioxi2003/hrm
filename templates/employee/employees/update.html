@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-10">
+                    <h4 class="card-title">Update Employee: {{ employee.full_name }}</h4>
+                </div>
+                <div class="col-md-2 text-right">
+                    <a href="{% url 'employee:employee_list' %}" class="btn btn-secondary">
+                        <i class="mdi mdi-arrow-left"></i> Back
+                    </a>
+                </div>
+            </div>
+
+            <form method="post" class="forms-sample">
+                {% csrf_token %}
+                
+                <!-- Same form fields as create.html -->
+                <!-- ... -->
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    <a href="{% url 'employee:employee_list' %}" class="btn btn-light">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
